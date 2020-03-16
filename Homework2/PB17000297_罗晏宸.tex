@@ -1,0 +1,54 @@
+\documentclass{article}
+\usepackage[UTF8]{ctex}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{siunitx}
+\usepackage{float}
+\title{Homework 2}
+\author{PB17000297 罗晏宸}
+\date{March 16 2020}
+
+\begin{document}
+\maketitle
+
+\section{Exercise 4.2}
+两个 $N \times N$ 阶的矩阵相乘，时间复杂度为 $T_1 = CN^3\si{\second}$，其中 $C$ 为常数；在 $n$ 节点的并行机上并行矩阵乘法的时间为 $T_n = (CN^3 / n + bN^2 / \sqrt{n})\si{\second}$，其中 $b$ 是另一常数，第一项代表计算时间，第二项代表通信开销。
+\subparagraph{1} 试求固定负载时的加速并讨论其结果
+\subparagraph{2} 试求固定时间时的加速并讨论其结果
+
+\paragraph{解}
+\subparagraph{1} 由 Amdahl 定律：
+\begin{align*}
+    S &= \frac{T_1}{T_n} \\
+    &= \frac{n}{1 + \frac{T_O}{W}} \\
+    &= \frac{n}{1 + \frac{b\sqrt{n}N^2}{CN^3}} \\
+    &= \frac{n}{1 + \frac{b\sqrt{n}}{CN}}
+\end{align*}
+随着处理器数$n$的增加，加速比 $S \rightarrow \frac{CN\sqrt{n}}{b}$
+
+\subparagraph{2} 由 Gustafson 定律：
+\begin{align*}
+    S' &= \frac{nT_1}{T_1 + T_O} \\
+    &= \frac{nCN^3}{CN^3 + \frac{bN^2}{\sqrt{n}}} \\
+    &= \frac{n}{1 + \frac{b}{CN\sqrt{n}}}
+\end{align*}
+随着处理器数$n$的增加，加速比 $S' \rightarrow n$，接近线性加速
+\section{Exercise 4.11}
+一个在 $p$ 个处理器上运行的并行程序加速比是 $p - 1$，根据 Amdahl 定律，串行分量是多少？
+
+\paragraph{解}
+由题，有
+\begin{align*}
+    && \frac{p}{1 + f(p - 1)} &= p - 1 & \\
+    \Rightarrow && f(p - 1) &= \frac{1}{p - 1} & \\
+    \Rightarrow && f &= \frac{1}{(p - 1)^2} &
+\end{align*}
+
+\section{Exercise 4.14}
+对于一个具有良好可扩放性的并行算法，任务的规模（或是任务的个数）会不会随着问题的规模的增加而增加？为什么？
+
+\paragraph{解}
+任务的规模不会显著增加，一般情况下，增加处理器数是会增加额外开销和降低处理器的利用率的，所以对于一个具有良好可扩放性的并行算法，其能否有效利用不断增加的处理器的能力会受到有效限制，对于处理器数 $p$ 和问题规模 $W$ 可以按照不同比例进行调整。
+\end{document}
