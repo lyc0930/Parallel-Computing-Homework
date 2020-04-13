@@ -169,42 +169,42 @@
 
 \paragraph{解}
 \subparagraph{(1)}
-注意到第\ref{BigLoop}行最外侧的循环迭代$\lceil \log{n} \rceil$次，在循环内第\ref{SmallLoop}行循环同样迭代$\lceil \log{n} \rceil$次，同时外侧循环内的各Do in parallel循环语句指出需要的处理器数为$n - 1$，因此算法的复杂度为$t(n) = (\log{n})^2$，$p(n) = n$。
+注意到第\ref{BigLoop}行最外侧的循环迭代$\lceil \log{n} \rceil$次，在循环内第\ref{SmallLoop}行循环同样迭代$\lceil \log{n} \rceil$次，同时考虑外侧循环内的前两个Do in parallel循环语句中的求出最小值也是并行的，需要的处理器数为$(n - 1)^2$，因此算法的复杂度为$t(n) = (\log{n})^2$，$p(n) = n^2$。
 
 \subparagraph{(2)}
 无向图共有8个结点，因此算法共进行$\lceil \log{8} \rceil = 3$次迭代，迭代过程如图\ref{figure:7.11Solution}所示。
 \begin{figure}[h]
     \centering
     \subfigure[初始化]{
-    \begin{tabular}{c|cccccccc}
-        顶点$i$  & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\ \hline
-        $C(i)$   &   &   &   &   &   &   &   &   \\
-        $D(i)$   & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8
-    \end{tabular}
+        \begin{tabular}{c|cccccccc}
+            顶点$i$ & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\ \hline
+            $C(i)$  &   &   &   &   &   &   &   &   \\
+            $D(i)$  & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8
+        \end{tabular}
     }
     \quad
     \subfigure[第一次迭代后的结果]{
-    \begin{tabular}{c|cccccccc}
-        顶点$i$  & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\ \hline
-        $C(i)$   & 1 & 2 & 3 & 4 & 5 & 2 & 2 & 1 \\
-        $D(i)$   & 1 & 2 & 3 & 4 & 5 & 2 & 2 & 1
-    \end{tabular}
+        \begin{tabular}{c|cccccccc}
+            顶点$i$ & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\ \hline
+            $C(i)$  & 1 & 2 & 3 & 1 & 1 & 2 & 2 & 1 \\
+            $D(i)$  & 1 & 2 & 3 & 1 & 1 & 2 & 2 & 1
+        \end{tabular}
     }
 
     \subfigure[第二次迭代后的结果]{
-    \begin{tabular}{c|cccccccc}
-        顶点$i$  & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\ \hline
-        $C(i)$   & 1 & 2 & 3 & 2 & 2 & 2 & 2 & 1 \\
-        $D(i)$   & 1 & 2 & 3 & 2 & 2 & 2 & 2 & 1
-    \end{tabular}
+        \begin{tabular}{c|cccccccc}
+            顶点$i$ & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\ \hline
+            $C(i)$  & 1 & 2 & 3 & 2 & 2 & 2 & 2 & 1 \\
+            $D(i)$  & 1 & 2 & 3 & 2 & 2 & 2 & 2 & 1
+        \end{tabular}
     }
     \quad
     \subfigure[第三次迭代后的结果]{
-    \begin{tabular}{c|cccccccc}
-        顶点$i$  & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\ \hline
-        $C(i)$   & 1 & 1 & 3 & 1 & 1 & 1 & 1 & 1 \\
-        $D(i)$   & 1 & 1 & 3 & 1 & 1 & 1 & 1 & 1
-    \end{tabular}
+        \begin{tabular}{c|cccccccc}
+            顶点$i$ & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\ \hline
+            $C(i)$  & 1 & 1 & 3 & 1 & 1 & 1 & 1 & 1 \\
+            $D(i)$  & 1 & 1 & 3 & 1 & 1 & 1 & 1 & 1
+        \end{tabular}
     }
     \caption{算法迭代过程}
     \label{figure:7.11Solution}
