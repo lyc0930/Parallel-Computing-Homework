@@ -43,7 +43,7 @@ process 0:
 MPI_Send(msg1, count1, MPI_INT, tag1, comm1);
 parallel_fft($\cdots$);
 process 1:
-MPI_Send(msg1, count1, MPI_INT, tag1, comm1);
+MPI_Recv(msg1, count1, MPI_INT, tag1, comm1);
 parallel_fft($\cdots$);
 \end{lstlisting}
 \subparagraph{\textcircled{1}} 试分析上述代码段的计算功能
@@ -56,7 +56,7 @@ parallel_fft($\cdots$);
 
 \paragraph{解}
 \subparagraph{\textcircled{1}}
-代码段中的 \lstinline{MPI_Send}函数参数列表中省略了 \lstinline{int dest} 参数，认为进程 \lstinline{0} 将起始地址为 \lstinline{msg1}的 \lstinline{count1} 个整型数据加上标签 \lstinline{tag1} 发送给通信域 \lstinline{comm1} 中的目标进程 \lstinline{1}，进程 \lstinline{1} 将相同类型的消息缓冲发送给同一通信域中的目标进程 \lstinline{0} 。考虑到 \lstinline{parallel_fft($\cdots$)} 中的消息接收，代码通过两个进程实现了快速傅里叶变换的并行计算。
+代码段中的 \lstinline{MPI_Send} 及 \lstinline{MPI_Recv} 函数参数列表中省略了 \lstinline{int dest} 或 \lstinline{int source} 参数，认为进程 \lstinline{0} 将起始地址为 \lstinline{msg1} 的 \lstinline{count1} 个整型数据加上标签 \lstinline{tag1} 发送给通信域 \lstinline{comm1} 中的目标进程 \lstinline{1}，进程 \lstinline{1} 从同一通信域中的源进程 \lstinline{0} 中接受相同类型的消息缓冲。代码通过两个进程实现了快速傅里叶变换的并行计算。
 
 \subparagraph{\textcircled{2}}
 没有通信体则程序无法区分在通信域 \lstinline{comm1} 和 \lstinline{comm2} 中编号同为 \lstinline{1} 的两个进程，发送给通信域 \lstinline{comm1} 中的目标进程 \lstinline{1} 的消息 \lstinline{msg1} 会与 \lstinline{msg2} 相互干扰，无法安全地区别不同的通信。
