@@ -1,0 +1,123 @@
+\documentclass{article}
+\usepackage[UTF8]{ctex}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[colorlinks, linkcolor = black]{hyperref}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{ulem}
+\usepackage{listings}
+\usepackage{siunitx}
+ \lstset{
+    basicstyle = \ttfamily,
+    keywordstyle = \color{blue!80!black}\bfseries,
+    linewidth = \linewidth,
+    % xleftmargin=.1\textwidth,
+    % xrightmargin=.1\textwidth,
+    breaklines = true,
+    breakatwhitespace = true,
+    breakautoindent = true,
+    frame = none,
+    commentstyle = \small\color{gray},
+    mathescape = true,
+    escapeinside = ``,
+    language = C++,
+    moredelim=*[is][\uline]{!*}{!*},
+    moredelim=[is][\color{blue!80!black}\bfseries\uline]{(*}{*)}
+}
+\geometry{left = 3.5cm, right = 3.5cm}
+\title{Homework 4}
+\author{PB17000297 罗晏宸}
+\date{May 24 2020}
+
+\begin{document}
+\maketitle
+
+\section{Exercise 15.1}
+\begin{lstlisting}[xleftmargin = .1\textwidth, xrightmargin = .1\textwidth]
+process 0:
+MPI_Send(msg1, count1, MPI_INT, tag1, comm1);
+parallel_fft($\cdots$);
+process 1:
+MPI_Send(msg1, count1, MPI_INT, tag1, comm1);
+parallel_fft($\cdots$);
+\end{lstlisting}
+\subparagraph{\textcircled{1}} 试分析上述代码段的计算功能
+\subparagraph{\textcircled{2}} 如果在 \lstinline{parallel_fft($\cdots$)} 中又包含了另一个发送程序：
+\begin{lstlisting}[xleftmargin = .1\textwidth, xrightmargin = .1\textwidth]
+    if (my_rank == 0) MPI_Send(msg2, count1, MPI_INT, 1, tag2, comm2);
+\end{lstlisting}
+
+如果没有通信体则会发生什么情况？
+
+\paragraph{解}
+\subparagraph{\textcircled{1}}
+代码段中的 \lstinline{MPI_Send}函数参数列表中省略了 \lstinline{int dest} 参数，认为进程 \lstinline{0} 将起始地址为 \lstinline{msg1}的 \lstinline{count1} 个整型数据加上标签 \lstinline{tag1} 发送给通信域 \lstinline{comm1} 中的目标进程 \lstinline{1}，进程 \lstinline{1} 将相同类型的消息缓冲发送给同一通信域中的目标进程 \lstinline{0} 。考虑到 \lstinline{parallel_fft($\cdots$)} 中的消息接收，代码通过两个进程实现了快速傅里叶变换的并行计算。
+
+\subparagraph{\textcircled{2}}
+没有通信体则程序无法区分在通信域 \lstinline{comm1} 和 \lstinline{comm2} 中编号同为 \lstinline{1} 的两个进程，发送给通信域 \lstinline{comm1} 中的目标进程 \lstinline{1} 的消息 \lstinline{msg1} 会与 \lstinline{msg2} 相互干扰，无法安全地区别不同的通信。
+\section{Exercise 15.3}
+填写空白处，使下述两代码段完全等效：
+\subparagraph{\textcircled{1}}
+\begin{lstlisting}[xleftmargin = .1\textwidth, xrightmargin = .1\textwidth, ]
+float data[1024];
+MPI_Datatype floattype;
+MPI_Type_vector(10, 1, 32, MPI_FLOAT, &floattype);
+MPI_Type_commit(&floattype);
+MPI_Send(data, 1, floattype, dest, tag, MPI_COMM_WORLD);
+MPI_Type_free(&floattype);
+\end{lstlisting}
+\subparagraph{\textcircled{2}}
+\begin{lstlisting}[xleftmargin = .1\textwidth, xrightmargin = .1\textwidth]
+float data[1024], buff[10];
+for(`\uline{~~~~}`; `\uline{~~~~}`; i++) buff[i] = data[`\uline{~~~~}`];
+MPI_Send(buff, `\uline{~~~~}`, MPI_FLOAT, `\uline{~~~~}`, `\uline{~~~~}`, `\uline{~~~~}`);
+\end{lstlisting}
+
+
+\paragraph{解}
+\subparagraph{\textcircled{2}}
+\begin{lstlisting}[xleftmargin = .1\textwidth, xrightmargin = .1\textwidth]
+float data[1024], buff[10];
+for(!*(*int*) i = 0!*; !*i < 10!*; i++)
+    buff[i] = data[!*32 * i!*];
+MPI_Send(buff, !*10!*, MPI_FLOAT, !*dest!*, !*tag!*, !*MPI_COMM_WORLD!*);
+\end{lstlisting}
+
+\section{Exercise 15.13}
+（ Buffon-Laplace 针问题）设想一个长为 $l$ 的针掉在一个等距平行线网格上，每个格的长和宽分别是 $a$ 和 $b$ 。针至少落在一根线上的概率为
+$$
+    P(l,\,a,\,b) = \frac{2l(a + b) - l^2}{\pi a b}
+$$
+我们可以用蒙特卡洛模拟法进行投针，从而来估计$\pi$的值
+\subparagraph{\textcircled{1}} 用 C 语言写一个串行的 Buffon-Laplace 针问题的仿真程序。程序打印 $\pi$ 的值。当针的数量是一百万时，运行模拟的时间是什么？ $\pi$ 的位数是多少？
+
+\paragraph{解}
+\subparagraph{\textcircled{1}}
+详细程序可见附件，程序中使用了如下函数模拟统计投针落在线上的次数
+\begin{lstlisting}[xleftmargin = .1\textwidth, xrightmargin = .1\textwidth, frame = single]
+int BuffonLaplaceSimulation(double l, double a, double b, int n)
+{
+    int hits = 0;
+    double x1, y1, x2, y2;
+    double angle;
+    for (int i = 0; i < n; i++)
+    {
+        x1 = a * (double)rand() / (double)RAND_MAX;
+        y1 = b * (double)rand() / (double)RAND_MAX;
+        angle = 2.0 * M_PI * (double)rand() / (double)RAND_MAX;
+        x2 = x1 + l * cos(angle);
+        y2 = y1 + l * sin(angle);
+        if (x2 <= 0 || x2 >= a || y2 <= 0 || y2 >= b)
+            hits++;
+    }
+    return hits;
+}
+\end{lstlisting}
+当取$l = a = b = 2$时，进行一百万次投针
+程序运行时间约为\SI{0.183}{\second}，计算得到$\pi$结果精确到小数点后 2 位，更改$l,\,a,\,b$的值，程序运行时间没有显著变化，结果精确位数没有改变。
+\end{document}
