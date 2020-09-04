@@ -4,6 +4,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{latexsym}
 \usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{siunitx}
 \usepackage{float}
 \title{Homework 2}
@@ -19,22 +20,34 @@
 \subparagraph{2} 试求固定时间时的加速并讨论其结果
 
 \paragraph{解}
-\subparagraph{1} 由 Amdahl 定律：
+\subparagraph{1} 当固定负载时，$N$ 为常数，当节点数为 $n$ 时，加速比为：
 \begin{align*}
     S &= \frac{T_1}{T_n} \\
-    &= \frac{n}{1 + \frac{T_O}{W}} \\
-    &= \frac{n}{1 + \frac{b\sqrt{n}N^2}{CN^3}} \\
+    &= \frac{CN^3}{\frac{CN^3}{n} + \frac{bN^2}{\sqrt{n}}} \\
     &= \frac{n}{1 + \frac{b\sqrt{n}}{CN}}
 \end{align*}
-随着处理器数$n$的增加，加速比 $S \rightarrow \frac{CN\sqrt{n}}{b}$
+随着处理器数$n$的增加，加速比 $S \rightarrow \frac{CN\sqrt{n}}{b}$，而加速经验公式为 $p / \log p \leqslant S \leqslant p$ ，说明随着节点数的增加，此算法在这台并行机上的加速效果逐渐变差，主要受到通信开销的制约。
 
-\subparagraph{2} 由 Gustafson 定律：
+\subparagraph{2} 当固定时间时，不同节点数的并行机所能完成的工作负载不同，这里用矩阵的阶数代表工作负载。当节点数为 $n$ 时，设固定的时间下，串行算法能完成的工作负载为 $N$，而并行算法能完成的工作负载为 $N_p$，则有：
+\begin{equation*}
+    CN^3 = CN_p^3 / n + bN_p^2 / \sqrt{n}
+\end{equation*}
+加速比定义为使用串行算法完成并行算法的工作负载的时间 $T_e$ 与并行算法的时间 $T_p$ 之比：
 \begin{align*}
-    S' &= \frac{nT_1}{T_1 + T_O} \\
-    &= \frac{nCN^3}{CN^3 + \frac{bN^2}{\sqrt{n}}} \\
-    &= \frac{n}{1 + \frac{b}{CN\sqrt{n}}}
+    S' &= \frac{T_e}{T_p} \\
+    &= \frac{CN_p^3}{CN^3} \\
+    &= \frac{N_p^3}{N^3}
 \end{align*}
-随着处理器数$n$的增加，加速比 $S' \rightarrow n$，接近线性加速
+则 $S'$ 满足方程：
+\begin{equation*}
+    S' + \frac{b\sqrt{n}}{CN}S'^{\frac{2}{3}} = n
+\end{equation*}
+经过变换，方程变为：
+\begin{equation*}
+    \frac{b}{CN}\left(\frac{S'}{n^{\frac{3}{4}}}\right)^{\frac{2}{3}} + \frac{1}{n^{\frac{1}{4}}}\left(\frac{S'}{n^{\frac{3}{4}}}\right) = 1
+\end{equation*}
+随着处理器数$n$的增加，加速比 $S \rightarrow \left(\frac{CN\sqrt{n}}{b}\right)^\frac{3}{2}n^{\frac{3}{4}}$，说明在固定时间的情形下，随着节点数的增加，此算法在这台并行机上的加速效果也会逐渐变差，受到通信开销的制约，但比固定负载时的情况好，因为当固定时间的情形下并行分量会提高。
+
 \section{Exercise 4.11}
 一个在 $p$ 个处理器上运行的并行程序加速比是 $p - 1$，根据 Amdahl 定律，串行分量是多少？
 
@@ -50,5 +63,5 @@
 对于一个具有良好可扩放性的并行算法，任务的规模（或是任务的个数）会不会随着问题的规模的增加而增加？为什么？
 
 \paragraph{解}
-任务的规模不会显著增加，一般情况下，增加处理器数是会增加额外开销和降低处理器的利用率的，所以对于一个具有良好可扩放性的并行算法，其能否有效利用不断增加的处理器的能力会受到有效限制，对于处理器数 $p$ 和问题规模 $W$ 可以按照不同比例进行调整。
+并行计算加速的基本原理是将一个算法中的可并行执行的部分放到多个处理器上同时执行，而并行算法的加速比中的 $p$ 是指它能够将问题分解成能够并行执行的任务数量。因此对于一个具有良好可扩放性的并行算法，任务的规模（个数）应该要随着问题的规模的增加而增加，这样才能充分利用更多的处理器，提高 $p$。
 \end{document}
